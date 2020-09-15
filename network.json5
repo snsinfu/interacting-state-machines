@@ -1,0 +1,95 @@
+{
+    nodes: [
+        "ZEB/gene/inactive",
+        "ZEB/gene/active",
+        "ZEB/RNA",
+        "ZEB/protein",
+        "miR-200/gene/inactive",
+        "miR-200/gene/active",
+        "miR-200/RNA",
+    ],
+
+    transitions: [
+        // Autonomous activations
+        {
+            source: "ZEB/gene/inactive",
+            destination: "ZEB/gene/active",
+            rate: 0.1,
+        },
+        {
+            source: "mir-200/gene/inactive",
+            destination: "mir-200/gene/active",
+            rate: 0.1,
+        },
+
+        // Negative feedbacks
+        {
+            source: "ZEB/gene/active",
+            destination: "ZEB/gene/inactive",
+            rate: 0.5,
+            input: {
+                node: "mir-200/RNA",
+                type: "step",
+                threshold: 0.3,
+            }
+        },
+        {
+            source: "mir-200/gene/active",
+            destination: "mir-200/gene/inactive",
+            rate: 0.5,
+            input: {
+                node: "ZEB/protein",
+                type: "step",
+                threshold: 0.3,
+            }
+        },
+    ],
+
+    generations: [
+        // Transcriptions
+        {
+            node: "ZEB/RNA",
+            rate: 0.7,
+            input: {
+                node: "ZEB/gene/active",
+                type: "linear",
+            }
+        },
+        {
+            node: "mir-200/RNA",
+            rate: 0.7,
+            input: {
+                node: "mir-200/gene/active",
+                type: "linear",
+            }
+        },
+
+        // Translation
+        {
+            node: "ZEB/protein",
+            rate: 2.5,
+            input: {
+                node: "ZEB/RNA",
+                type: "linear",
+            }
+        },
+    ],
+
+    destructions: [
+        // RNA decayings
+        {
+            node: "ZEB/RNA",
+            rate: 0.5,
+        },
+        {
+            node: "mir-200/RNA",
+            rate: 0.5,
+        },
+
+        // Protein decayings
+        {
+            node: "ZEB/protein",
+            rate: 0.2,
+        },
+    ]
+}
